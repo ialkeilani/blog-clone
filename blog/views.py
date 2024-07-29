@@ -11,3 +11,5 @@ class about(View):
     def get(self, request):
         context_dict = {}
         return render(request, "blog/about.html", context_dict)
+
+pass
