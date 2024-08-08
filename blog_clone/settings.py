@@ -37,8 +37,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'blog'
 ]
+INSTALLED_APPS+=[item.name for item in BASE_DIR.iterdir() if item.is_dir() and
+                # exclude these:
+                 item.name != BASE_DIR.name and     # project name subdirectory
+                 item.name[0] != '.']               # hidden directories
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

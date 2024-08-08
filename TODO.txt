@@ -1,0 +1,8 @@
+TASKS:
+- make app name dynamic in template files (pass it in a context dict as "APP_NAME")
+- dynamic app name in views
+    - trying removing the call to the ".as_posix()"
+- try to access "post_update/delete" views using url bar w/o being authenticated. it should work..if so, add the "mixin" to prevent this
+
+Qs:
+- figure out the DTL variable name "post", how does it come through the the DetailView? read more on the DetailView django documentation
