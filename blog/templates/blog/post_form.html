@@ -2,11 +2,12 @@
 
 {% block content %}
 
+<strong>post_form.html</strong>
 <h1>New Post</h1>
 <form method="POST">
     {% csrf_token %}
     {{form.as_p}}
-    <button type="submit"></button>
+    <button type="submit">submit</button>
 </form>
 
 {% endblock %}

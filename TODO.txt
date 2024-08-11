@@ -3,6 +3,13 @@ TASKS:
 - dynamic app name in views
     - trying removing the call to the ".as_posix()"
 - try to access "post_update/delete" views using url bar w/o being authenticated. it should work..if so, add the "mixin" to prevent this
+- try meta ordering on your post model
+    class Meta:
+        ordering = ["-<fieldname>"]
+- try using only get_queryset in PostList view and remove attribute "model"
+- simplify return of get_queryset in PostList view to
+    return PostList.model.objects.order_by("-published_date")
+- code "login_url" of "Post<Create/Update>" class view to dynamically track the login url with the get parameter "next=post/<create/update>"
 
 Qs:
 - figure out the DTL variable name "post", how does it come through the the DetailView? read more on the DetailView django documentation

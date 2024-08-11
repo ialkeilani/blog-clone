@@ -1,11 +1,13 @@
 {% extends 'blog/base.html' %}
 
 {% block content %}
-    {% for post in posts %}
+<strong>post_draft_list.html</strong>
+    {% for post in object_list %}
         <div>
+            <h1><a href="{% url 'blog:post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
             <p>created: {{ post.created_date|date:'d-m-Y' }}</p>
-            <h1><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
             <p>{{ post.text|truncatechars:200 }}</p>
+            <hr>
         </div>
     {% endfor %}
 {% endblock %}
