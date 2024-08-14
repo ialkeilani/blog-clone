@@ -4,7 +4,7 @@ from django.utils import timezone
 from django.urls import reverse
 
 # Create your models here.
-class   Post(models.Model):
+class Post(models.Model):
     author = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     title = models.CharField(max_length=264)
     text = models.TextField()
@@ -16,12 +16,17 @@ class   Post(models.Model):
         self.save()
 
 
-    def get_approved_comments(self):
-        return self.comments.filter(approved_comment=True)
+    def get_comments_ordered(self, *order_by_clause):
+        clause = order_by_clause or ("-created_date",)
+        return self.comments.order_by(*clause)
 
 
-    def get_absolute_url(self):
-        return reverse("blog:post_detail", kwargs={"pk": self.pk})
+    def get_approved_comments_count(self):
+        return self.comments.filter(approved_comment=True).count()
+
+
+    # def get_absolute_url(self):
+    #     return reverse("blog:post_detail", kwargs={"pk": self.pk})
 
 
     def __str__(self):
@@ -39,8 +44,8 @@ class Comment(models.Model):
         self.approved_comment = True
         self.save()
 
-    def get_absolute_url(self):
-        return reverse("blog:post_detail", kwargs={"pk": self.pk})
+    # def get_absolute_url(self):
+    #     return reverse("blog:post_detail", kwargs={"pk": self.post.pk})
 
     def __str__(self):
         return self.text

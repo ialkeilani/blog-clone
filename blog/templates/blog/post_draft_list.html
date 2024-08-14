@@ -6,7 +6,9 @@
         <div>
             <h1><a href="{% url 'blog:post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
             <p>created: {{ post.created_date|date:'d-m-Y' }}</p>
-            <p>{{ post.text|truncatechars:200 }}</p>
+{#          <p>{{ post.text|truncatechars:200 }}</p>  #}
+            <p>by {{ post.author }}</p>
+            <a href="{% url 'blog:post_detail' pk=post.pk %}">Comments: {{post.comments.count}}</a>
             <hr>
         </div>
     {% endfor %}

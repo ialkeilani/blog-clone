@@ -18,18 +18,17 @@
 
 
       {% if user.is_authenticated %}
-          <a href="{% url 'blog:post_update' pk=post.pk %}"><span>Update</span></a>
-          <a href="{% url 'blog:post_delete' pk=post.pk %}"><span>Delete</span></a>
+          <a href="{% url 'blog:post_update' pk=post.pk %}"><span>Update</span></a> <a href="{% url 'blog:post_delete' pk=post.pk %}"><span>Delete</span></a>
       {% endif %}
 
+  <p></p><a href="{% url 'blog:add_comment_to_post' post_pk=post.pk %}">Add comment</a></p>
+  <hr style="border-top: 2px solid;">
+
+<div>
 
 
-  <hr>
-  <a href="{% url 'blog:add_comment_to_post' pk=post.pk %}">Add comment</a>
-  <div>
-
-
-  {% for comment in post.comments.all %}
+  {#    {% for comment in post.comments.all %}  #}
+      {% for comment in post_comments %}
   <br>
       {% if user.is_authenticated or comment.approved_comment %}
 
@@ -40,7 +39,9 @@
               {% endif %}
 
           <p>{{ comment.text|safe|linebreaks }}</p>
+            <pre>dbg:comment id: {{comment.id}}</pre>
           <p>Posted by: <strong>{{ comment.author }}</strong></p>
+            <hr style="border-top: 1px dashed;">
 
       {% endif %}
   {% empty %}

@@ -9,8 +9,9 @@
             <h1><a href="{% url 'blog:post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
             <div>
                 <p>Published on: {{ post.published_date|date:"D M Y"}}</p>
+                <p>by {{ post.author }}</p>
             </div>
-            <a href="{% url 'blog:post_detail' pk=post.pk %}">Comments: {{ post.get_approved_comments.count }}</a>
+            <a href="{% url 'blog:post_detail' pk=post.pk %}">Approved Comments: {{ post.get_approved_comments_count }}</a>
             <hr>
         </div>
     {% endfor %}
