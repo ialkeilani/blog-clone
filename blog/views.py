@@ -18,12 +18,18 @@ class About(TemplateView):
 
 
 class PostList(ListView):
-    # model = models.Post
+    model = models.Post
     queryset = models.Post.objects.filter(published_date__isnull=False).order_by("-published_date")
+    # queryset = models.Post.objects.filter(published_date__isnull=False)
 
     # def get_queryset(self):
     #     # return PostList.model.objects.order_by("-published_date")
     #     return models.Post.objects.filter(published_date__isnull=False).order_by("-published_date")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["app_name"] = app_name
+        return context
 
 
 class PostDetail(DetailView):

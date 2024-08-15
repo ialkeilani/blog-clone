@@ -1,11 +1,7 @@
 TASKS:
-- make app name dynamic in template files (pass it in a context dict as "APP_NAME")
-- dynamic app name in views
-    - trying removing the call to the ".as_posix()"
-- try to access "post_update/delete" views using url bar w/o being authenticated. it should work..if so, add the "mixin" to prevent this
-- try meta ordering on your post model
-    class Meta:
-        ordering = ["-<fieldname>"]
+- add support for users signup
+
+
 
 
 
@@ -15,7 +11,11 @@ Qs:
 
 Completed:
 - code "login_url" of "Post<Create/Update>" class view to dynamically track the login url with the get parameter "next=post/<create/update>".  NOT NEEDED.  ALREADY AVAIALBE AS DEFAULT BEHAVIOR
-- figure out the DTL variable name "post", how does it come through the the DetailView? read more on the DetailView django documentation
+- figure out the DTL variable name "post", how does it come through the DetailView? read more on the DetailView django documentation
 - try to access a post detail page while not logged in. you should see approved comments only
 - convert function view to class-based CreateView:
     add_comment_to_post
+- try meta ordering on your post model IT SEEMS TO BE APPLIED AFTER QUERYSET
+    class Meta:
+        ordering = ["-<fieldname>"]
+- make app name dynamic in template files (pass it in a context dict as "app_name")
