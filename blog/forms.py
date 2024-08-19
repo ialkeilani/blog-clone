@@ -5,8 +5,8 @@ from .models import Post, Comment
 class PostForm(forms.ModelForm):
     class Meta():
         model = Post
-        fields = ('author', 'title', 'text')
-
+        # fields = ('author', 'title', 'text')
+        fields = ('title', 'text') #author and published_date will be set by the views
 
 
 class CommentForm(forms.ModelForm):

@@ -1,10 +1,12 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, edit
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
+
+from django.contrib import auth
 
 from . import models
 from . import forms
@@ -53,8 +55,33 @@ class PostCreate(LoginRequiredMixin, CreateView):
     #     return f"""{reverse_lazy("login")}?next={reverse_lazy("blog:post_create")}"""
 
     def get_success_url(self):
-        print("dbg:self.object.pk:", self.object.pk)
         return reverse_lazy(f"{app_name}:post_detail", kwargs={"pk": self.object.pk})
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handle POST requests: instantiate a form instance with the passed
+        POST variables and then check if it's valid.
+        """
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form, request) # pass the request so ".form_valid()" can save the username
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form, request):
+        post = form.save(commit=False) #get submitted form data but don't save yet
+        post.author = auth.get_user(request) #set username
+        post.save()
+        self.object = post
+        return super(edit.ModelFormMixin, self).form_valid(form)
+
+    # def get(self, request, *args, **kwargs):
+    #     # user = auth.get_user(request)
+    #     # get_object_or_404(auth.User, username=request.user.username)
+    #     # print("dbg:user.username", user.username, user.pk)
+    #     # print("dbg:dir(request.user):", request.user.username)
+    #     # print("dbg:dir(self):", dir(self.request))
+    #     return super().get(request, *args, **kwargs)
 
 
 
@@ -109,10 +136,16 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
 
     def form_valid(self, form):
-        comment = form.save(commit=False)
+        # comment = form.save(commit=False)
+        # comment.post = get_object_or_404(models.Post, pk=self.kwargs["post_pk"])
+        # comment.save()
+        # return super().form_valid(form)
+
+        comment = form.save(commit=False)  # get submitted form data but don't save yet
         comment.post = get_object_or_404(models.Post, pk=self.kwargs["post_pk"])
         comment.save()
-        return super().form_valid(form)
+        self.object = comment
+        return super(edit.ModelFormMixin, self).form_valid(form)
 
 
     def get_success_url(self):

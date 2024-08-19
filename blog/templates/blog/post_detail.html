@@ -7,14 +7,14 @@
 
         {% if post.published_date %}
             <div>
-                PUBLISHED {{ post.published_date }}
+                PUBLISHED on {{ post.published_date }}
             </div>
 
         {% else %}
-            UNPUBLISHED <a href="{% url 'blog:post_publish' pk=post.pk %}">Publish</a>
+            UNPUBLISHED created on {{ post.created_date }} <a href="{% url 'blog:post_publish' pk=post.pk %}">Publish</a>
         {% endif %}
 
-      <p>{{ post.text|safe|linebreaksbr }}</p>
+      <p>{{ post.text|safe|linebreaksbr }} by {{ post.author }}</p>
 
 
       {% if user.is_authenticated %}
@@ -32,15 +32,15 @@
   <br>
       {% if user.is_authenticated or comment.approved_comment %}
 
-              {{ comment.created_date }}
+              <p>created on {{ comment.created_date }} by {{ comment.author }}
               {% if not comment.approved_comment %}
                   <a href="{% url 'blog:comment_remove' pk=comment.pk %}"><span>Remove</span></a>
                   <a href="{% url 'blog:comment_approve' pk=comment.pk %}"><span>Approve</span></a>
               {% endif %}
+              </p>
 
           <p>{{ comment.text|safe|linebreaks }}</p>
-            <pre>dbg:comment id: {{comment.id}}</pre>
-          <p>Posted by: <strong>{{ comment.author }}</strong></p>
+            {# <pre>dbg:comment id: {{comment.id}}</pre> #}
             <hr style="border-top: 1px dashed;">
 
       {% endif %}

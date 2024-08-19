@@ -33,7 +33,7 @@ class Post(models.Model):
 
 
     def __str__(self):
-        return self.title
+        return self.pk, self.title, self.author, self.created_date
 
 
 class Comment(models.Model):

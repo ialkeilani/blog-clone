@@ -1,5 +1,14 @@
 TASKS:
 - add support for users signup
+    - only superuser can publish
+    - except for superusers, each user sees their own drafts only
+    - normal user can delete their posts only, while super user can delete everybody
+    - register should be available if not logged in
+    - after registering, user should be redirected to logging in
+    - try to register same user twice before loging in
+
+
+- try logging in with an inactive user
 
 
 
@@ -7,6 +16,7 @@ TASKS:
 
 
 Qs:
+models.OneToOneField(classModel) vs models.ForeignKey("ClassModel")
 
 
 Completed:
@@ -19,3 +29,131 @@ Completed:
     class Meta:
         ordering = ["-<fieldname>"]
 - make app name dynamic in template files (pass it in a context dict as "app_name")
+
+
+
+
+from django.contrib.auth.models import User
+
+class UserExtended(models.Model)
+    user = models.OneToOneField(User)
+    # add additional attributes
+
+
+register "UserExtended" in admin.py
+
+
+create model forms, 1 form for each of the user models, "User" and "UserExtended", by inheriting from "forms.ModelForm"
+
+
+migrate -> makemigrations -> migrate
+
+create registration template
+    {% block body_block %}
+      <div>
+        <div>
+          {% if registered %}
+            <h1>Thank you for registering!</h1>
+          {% else %}
+            <h1>Register Here</h1>
+            <h3>Just fill out the form.</h3>
+
+<!--            <form enctype="multipart/form-data" method="POST">  enctype IS RQUIRED FOR FORMS WITH PROFILE PICTURE AND POTENTIALLY ANY OTHER BINARY USER DATA-->
+            <form method="POST">
+              {% csrf_token %}
+              {{ user_form.as_p }}
+              {{ profile_form.as_p }}
+<!--               <input type="submit" name="" value="Register">   -->
+            </form>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+    {% endblock %}
+
+create registeration view
+    def register(request):
+        registered = False
+
+        if request.method == 'POST':
+
+            # Get info from "both" forms
+            # It appears as one form to the user on the .html page
+            user_form = UserForm(data=request.POST)
+            profile_form = UserProfileInfoForm(data=request.POST)
+
+            # Check to see both forms are valid
+            if user_form.is_valid() and profile_form.is_valid():
+
+                # Save User Form to Database
+                user = user_form.save()
+
+                # Hash the password
+                user.set_password(user.password)
+
+                # Update with Hashed password
+                user.save()
+
+                # Now we deal with the extra info!
+
+                # Can't commit yet because we still need to manipulate
+                profile = profile_form.save(commit=False)
+
+                # Set One to One relationship between
+                # UserForm and UserProfileInfoForm
+                profile.user = user
+
+                # Check if they provided a profile picture
+                if 'profile_pic' in request.FILES:
+                    print('found it')
+                    # If yes, then grab it from the POST form reply
+                    profile.profile_pic = request.FILES['profile_pic']
+
+                # Now save model
+                profile.save()
+
+                # Registration Successful!
+                registered = True
+
+            else:
+                # One of the forms was invalid if this else gets called.
+                print(user_form.errors,profile_form.errors)
+
+        else:
+            # Was not an HTTP post so we just render the forms as blank.
+            user_form = UserForm()
+            profile_form = UserProfileInfoForm()
+
+        # This is the render and context dictionary to feed
+        # back to the registration.html file page.
+        return render(request,'basic_app/registration.html',
+                              {'user_form':user_form,
+                               'profile_form':profile_form,
+                               'registered':registered})
+
+
+create login template
+    {% block content %}
+      <div>
+
+        <h2>Please Login: </h2>
+        {% if form.errors %}
+            <p>Your username and password didn't match.Please try again!</p>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+            {{form.as_p}}
+
+            <input type="submit" value="Login" />
+            <input type="hidden" name="next" value="{{ next }}" />
+        </form>
+      </div>
+    {% endblock %}
+
+
+
+
