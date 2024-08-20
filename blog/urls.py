@@ -21,6 +21,9 @@ urlpatterns = [
     path('comment/<int:pk>/remove/', views.comment_remove, name="comment_remove"),
 
     path('about/', views.About.as_view(), name="about"),
+
     path('message/<str:msg>/', views.Message.as_view(), name="message"),
+    path('forbidden/', views.forbidden, name="forbidden"),
+
 
 ]

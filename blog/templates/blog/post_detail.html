@@ -11,26 +11,29 @@
             </div>
 
         {% else %}
-            UNPUBLISHED created on {{ post.created_date }} <a href="{% url 'blog:post_publish' pk=post.pk %}">Publish</a>
+            UNPUBLISHED created on {{ post.created_date }}
+            {% if user.is_superuser or user.is_authenticated and post.author.pk == user.pk %}
+                <a href="{% url 'blog:post_publish' pk=post.pk %}">Publish</a>
+            {% endif %}
         {% endif %}
 
       <p>{{ post.text|safe|linebreaksbr }} by {{ post.author }}</p>
 
 
-      {% if user.is_authenticated %}
+        {% if user.is_superuser or user.is_authenticated and post.author.pk == user.pk %}
           <a href="{% url 'blog:post_update' pk=post.pk %}"><span>Update</span></a> <a href="{% url 'blog:post_delete' pk=post.pk %}"><span>Delete</span></a>
-      {% endif %}
+        {% endif %}
 
   <p></p><a href="{% url 'blog:add_comment_to_post' post_pk=post.pk %}">Add comment</a></p>
   <hr style="border-top: 2px solid;">
 
 <div>
 
-
+    <h3>Comments will post only after review and approval</h3>
   {#    {% for comment in post.comments.all %}  #}
       {% for comment in post_comments %}
   <br>
-      {% if user.is_authenticated or comment.approved_comment %}
+      {% if user.is_superuser or comment.approved_comment %}
 
               <p>created on {{ comment.created_date }} by {{ comment.author }}
               {% if not comment.approved_comment %}

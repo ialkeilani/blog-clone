@@ -33,12 +33,12 @@ class Post(models.Model):
 
 
     def __str__(self):
-        return self.pk, self.title, self.author, self.created_date
+        return f"{self.pk} -> {self.title} by {self.author.username} on ({self.created_date})"
 
 
 class Comment(models.Model):
     post = models.ForeignKey("Post", related_name="comments", on_delete=models.CASCADE)
-    author = models.CharField(max_length=264)
+    author = models.ForeignKey("auth.User", on_delete=models.CASCADE)
     text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)
     approved_comment = models.BooleanField(default=False)

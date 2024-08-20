@@ -1,7 +1,8 @@
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, edit
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
@@ -56,20 +57,9 @@ class PostCreate(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy(f"{app_name}:post_detail", kwargs={"pk": self.object.pk})
 
-    def post(self, request, *args, **kwargs):
-        """
-        Handle POST requests: instantiate a form instance with the passed
-        POST variables and then check if it's valid.
-        """
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form, request) # pass the request so ".form_valid()" can save the username
-        else:
-            return self.form_invalid(form)
-
-    def form_valid(self, form, request):
+    def form_valid(self, form):
         post = form.save(commit=False) #get submitted form data but don't save yet
-        post.author = auth.get_user(request) #set username
+        post.author = auth.get_user(self.request) #set username
         post.save()
         self.object = post
         return super(edit.ModelFormMixin, self).form_valid(form)
@@ -98,6 +88,22 @@ class PostDelete(LoginRequiredMixin, DeleteView):
     model = models.Post
     success_url = reverse_lazy(f"{app_name}:post_list") # page to send users to after deleting a record
 
+    # def get_queryset(self):
+    #     if self.request.user.is_superuser:
+    #         return models.Post.objects.all()
+    #     else:
+    #         return models.Post.objects.filter(author=self.request.user.pk)
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_superuser or self.get_queryset().get(pk=kwargs["pk"]).author.pk == request.user.pk:
+            # continue normally
+            self.object = self.get_object()
+            context = self.get_context_data(object=self.object)
+            return self.render_to_response(context)
+        else:
+            # communicate error
+            return redirect(f"{app_name}:message", msg="!!! ERR: UNAUTHORIZED ACTION !!!")
+
 
 class DraftList(LoginRequiredMixin, ListView):
     template_name = (Path(app_name) / "post_draft_list.html").as_posix()
@@ -118,10 +124,12 @@ def post_publish(request, pk):
         post.publish()
         redirect_view = "post_list"
         context = {}
+        return redirect(f"{app_name}:{redirect_view}", **context)
     else:
-        redirect_view = "message"
-        context = {"msg": "!!! ERR: UNAUTHORIZED ACTION !!!"}
-    return redirect(f"{app_name}:{redirect_view}", **context)
+        # redirect_view = "message"
+        # context = {"msg": "!!! ERR: UNAUTHORIZED ACTION !!!"}
+    # return redirect(f"{app_name}:{redirect_view}", **context)
+        return redirect(f"{app_name}:forbidden")
 
 
 # @login_required
@@ -152,6 +160,7 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
         comment = form.save(commit=False)  # get submitted form data but don't save yet
         comment.post = get_object_or_404(models.Post, pk=self.kwargs["post_pk"])
+        comment.author = auth.get_user(self.request)
         comment.save()
         self.object = comment
         return super(edit.ModelFormMixin, self).form_valid(form)
@@ -163,18 +172,22 @@ class CommentCreate(LoginRequiredMixin, CreateView):
 
 
 
-@login_required
+@user_passes_test(lambda u: u.is_superuser, login_url=reverse_lazy("admin:login"))
 def comment_approve(request, pk):
     comment = get_object_or_404(models.Comment, pk=pk)
     comment.approve()
     return redirect(f"{app_name}:post_detail", pk=comment.post.pk)
 
 
-@login_required
+@user_passes_test(lambda u: u.is_superuser, login_url=reverse_lazy(f"{app_name}:forbidden"))
 def comment_remove(request, pk):
     comment = get_object_or_404(models.Comment, pk=pk)
     post_pk = comment.post.pk
     comment.delete()
     return redirect(f"{app_name}:post_detail", pk=post_pk)
+
+
+def forbidden(request):
+    return HttpResponseForbidden("You don't have permission to access this page.")
 
 
