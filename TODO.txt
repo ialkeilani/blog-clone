@@ -1,7 +1,7 @@
 TASKS:
 - add support for users signup
+
     - only superuser can publish
-    - except for superusers, each user sees their own drafts only
     - normal user can delete their posts only, while super user can delete everybody
     - register should be available if not logged in
     - after registering, user should be redirected to logging in
@@ -29,6 +29,9 @@ Completed:
     class Meta:
         ordering = ["-<fieldname>"]
 - make app name dynamic in template files (pass it in a context dict as "app_name")
+- add support for users signup
+    - except for superusers, each user sees their own drafts only
+    - other than superusuer, each user can only publish their posts
 
 
 

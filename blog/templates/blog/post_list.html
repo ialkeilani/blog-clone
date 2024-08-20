@@ -8,7 +8,7 @@
 
             <h1><a href="{% url app_name|add:':post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
             <div>
-                <p>PUBLISHED on: {{ post.published_date|date:"D M Y"}} by {{ post.author }}</p>
+                <p>PUBLISHED on: {{ post.published_date|date:"M d, Y"}} by {{ post.author }}</p>
             </div>
             <a href="{% url 'blog:post_detail' pk=post.pk %}">Approved Comments: {{ post.get_approved_comments_count }}</a>
             <hr>

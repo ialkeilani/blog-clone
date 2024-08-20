@@ -19,14 +19,13 @@ class About(TemplateView):
     template_name = (Path(app_name)/"about.html").as_posix()
 
 
-class PostList(ListView):
-    model = models.Post
-    queryset = models.Post.objects.filter(published_date__isnull=False).order_by("-published_date")
-    # queryset = models.Post.objects.filter(published_date__isnull=False)
+class Message(TemplateView):
+    template_name = (Path(app_name)/"message.html").as_posix()
 
-    # def get_queryset(self):
-    #     # return PostList.model.objects.order_by("-published_date")
-    #     return models.Post.objects.filter(published_date__isnull=False).order_by("-published_date")
+
+class PostList(ListView):
+    # model = models.Post
+    queryset = models.Post.objects.filter(published_date__isnull=False).order_by("-published_date")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -105,14 +104,24 @@ class DraftList(LoginRequiredMixin, ListView):
     # model = models.Post
 
     def get_queryset(self):
-        return models.Post.objects.filter(published_date__isnull=True).order_by("-created_date")
+        if self.request.user.is_superuser:
+            return models.Post.objects.filter(published_date__isnull=True).order_by("-created_date")
+        else:
+            return models.Post.objects.filter(published_date__isnull=True, author=self.request.user.pk).order_by("-created_date")
 
 
 @login_required
 def post_publish(request, pk):
     post = get_object_or_404(models.Post, pk=pk)
-    post.publish()
-    return redirect(f"{app_name}:post_list")
+    print("dbg:", post.author.pk, request.user.pk, request.user.is_superuser)
+    if post.author.pk == request.user.pk or request.user.is_superuser:
+        post.publish()
+        redirect_view = "post_list"
+        context = {}
+    else:
+        redirect_view = "message"
+        context = {"msg": "!!! ERR: UNAUTHORIZED ACTION !!!"}
+    return redirect(f"{app_name}:{redirect_view}", **context)
 
 
 # @login_required
