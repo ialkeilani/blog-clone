@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, edit
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
 from django.conf import settings
 
@@ -147,9 +147,15 @@ def post_publish(request, pk):
 #     return render(request, (Path(app_name) / "comment_form.html").as_posix(), {"form":form})
 
 
-class CommentCreate(LoginRequiredMixin, CreateView):
+class CommentCreate(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     form_class = forms.CommentForm
     model = models.Comment
+
+    def test_func(self):
+        post = models.Post.objects.get(pk=self.kwargs["post_pk"])
+        current_user = auth.get_user(self.request)
+        print("dbg:", post.published_date, post.author == current_user, current_user.is_superuser)
+        return post.published_date or post.author == current_user or current_user.is_superuser #comments can be added only to published posts or only if commentator is the post author, or he is superusuer
 
 
     def form_valid(self, form):

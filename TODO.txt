@@ -1,6 +1,5 @@
 TASKS:
 - add support for users signup
-    - no comments are allwed for draft posts
     - register should be available if not logged in
     - after registering, user should be redirected to logging in
     - try to register same user twice before loging in
@@ -36,6 +35,7 @@ Completed:
     - only super user can approve comments
     - responseforbidden
     - "valid_form()" can use "self.request"
+    - no comments are allwed for draft posts, except for superuser, or if commentator is the post author
 
 
 
