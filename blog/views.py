@@ -74,12 +74,22 @@ class PostCreate(LoginRequiredMixin, CreateView):
     def get_success_url(self):
         return reverse_lazy(f"{app_name}:post_detail", kwargs={"pk": self.object.pk})
 
+    # def form_valid(self, form):
+    #     post = form.save(commit=False) #get submitted form data but don't save yet
+    #     post.author = auth.get_user(self.request) #set username
+    #     post.save()
+    #     self.object = post
+    #     return super(edit.ModelFormMixin, self).form_valid(form)
+
+    # def form_valid(self, form):
+    #     post = form.save(commit=False) #get submitted form data but don't save yet
+    #     post.author = auth.get_user(self.request) #set username
+    #     self.object = form.save()
+    #     return super(edit.ModelFormMixin, self).form_valid(form)
+
     def form_valid(self, form):
-        post = form.save(commit=False) #get submitted form data but don't save yet
-        post.author = auth.get_user(self.request) #set username
-        post.save()
-        self.object = post
-        return super(edit.ModelFormMixin, self).form_valid(form)
+        form.save(commit=False).author = self.request.user #get submitted form data but don't save yet, then set the username
+        return super().form_valid(form)
 
     # def get(self, request, *args, **kwargs):
     #     # user = auth.get_user(request)
