@@ -1,7 +1,8 @@
-from django.http import HttpResponseForbidden
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import View, TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView, edit
 from django.utils import timezone
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy, reverse
@@ -16,6 +17,21 @@ from pathlib import Path
 
 app_name = Path(__file__).parent.name
 
+class Registration(UserPassesTestMixin, CreateView):
+    template_name = "registration/registration.html"
+    form_class = forms.CustomUserCreationForm
+    success_url = reverse_lazy(f"{app_name}:post_list")
+
+
+    def test_func(self):
+        return not auth.get_user(self.request).is_authenticated #only available if no user is currently logged in
+
+    def form_valid(self, form):
+        """If the form is valid, save the associated model."""
+        self.object = form.save()
+        login(self.request, self.object)
+        return HttpResponseRedirect(self.get_success_url())
+
 class About(TemplateView):
     template_name = (Path(app_name)/"about.html").as_posix()
 
@@ -27,11 +43,12 @@ class Message(TemplateView):
 class PostList(ListView):
     # model = models.Post
     queryset = models.Post.objects.filter(published_date__isnull=False).order_by("-published_date")
+    extra_context = {"app_name": app_name}
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["app_name"] = app_name
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context["app_name"] = app_name
+    #     return context
 
 
 class PostDetail(DetailView):
@@ -154,7 +171,6 @@ class CommentCreate(UserPassesTestMixin, LoginRequiredMixin, CreateView):
     def test_func(self):
         post = models.Post.objects.get(pk=self.kwargs["post_pk"])
         current_user = auth.get_user(self.request)
-        print("dbg:", post.published_date, post.author == current_user, current_user.is_superuser)
         return post.published_date or post.author == current_user or current_user.is_superuser #comments can be added only to published posts or only if commentator is the post author, or he is superusuer
 
 

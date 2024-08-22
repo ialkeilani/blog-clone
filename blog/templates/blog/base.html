@@ -29,9 +29,9 @@
                 <a href="{% url 'blog:draft_list' %}">Drafts</a>
                 <a href="{% url 'blog:post_create' %}">New Post</a>
                 <a href="{% url 'logout' %}">Log out</a>
-                <a >Welcome: {{ user.username }}</a>
+                <span>Welcome: <strong>{{ user.username }}</strong></span>
               {% else %}
-                <a href="{% url 'login' %}" aria-label="Login"><span aria-hidden="true">Login</span></a>
+                <a href="{% url 'login' %}" aria-label="Login"><span aria-hidden="true">Login</span></a>/<a href="{% url 'blog:registration' %}" aria-label="sign-up"><span aria-hidden="true">Sign Up</span></a>
 
 
               {% endif %}

@@ -1,4 +1,8 @@
 from django import forms
+
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+
 from .models import Post, Comment
 
 
@@ -14,3 +18,23 @@ class CommentForm(forms.ModelForm):
         model = Comment
         # fields = ('author' , 'text')
         fields = ('text',)
+
+
+# class UserForm(forms.ModelForm):
+#     # password = forms.CharField(widget=forms.PasswordInput())
+#     class Meta():
+#         model = User
+#         fields = "__all__"
+#         # fields = ('username', 'password')
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = UserCreationForm.Meta.fields + ('email', 'first_name', 'last_name')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['email'].help_text = 'Optional'
+        self.fields['first_name'].help_text = 'Optional'
+        self.fields['last_name'].help_text = 'Optional'

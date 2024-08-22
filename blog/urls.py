@@ -20,6 +20,9 @@ urlpatterns = [
     path('comment/<int:pk>/approve/', views.comment_approve, name="comment_approve"),
     path('comment/<int:pk>/remove/', views.comment_remove, name="comment_remove"),
 
+    path('registration/', views.Registration.as_view(), name="registration"),
+    path('registration/<int:reg_done>/', views.Registration.as_view(), name="registration"),
+
     path('about/', views.About.as_view(), name="about"),
 
     path('message/<str:msg>/', views.Message.as_view(), name="message"),

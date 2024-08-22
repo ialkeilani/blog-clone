@@ -1,0 +1,29 @@
+{% extends 'blog/base.html' %}
+
+
+{% block content %}
+      <div>
+          <strong>registration.html</strong>
+        <div>
+            dbg:{{ registered }}
+          {% if registered %}
+            <h3>registration successful</h3><a href="{% url 'login' %}" aria-label="Login"><span aria-hidden="true"> Login</span></a>
+          {% else %}
+            <h1>Sign up here</h1>
+<!--            <form enctype="multipart/form-data" method="POST">  enctype IS RQUIRED FOR FORMS WITH PROFILE PICTURE AND POTENTIALLY ANY OTHER BINARY USER DATA-->
+            <form method="POST">
+              {% csrf_token %}
+              {{ form.as_p }}
+{#              {{ profile_form.as_p }}     #}
+               <input type="submit" value="Sign Me Up!">
+            </form>
+
+          {% endif %}
+
+        </div>
+
+      </div>
+
+    {% endblock %}
+
+
