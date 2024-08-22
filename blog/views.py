@@ -96,6 +96,9 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     form_class = forms.PostForm
     model = models.Post
 
+    def get_success_url(self):
+        return reverse_lazy(f"{app_name}:post_detail", kwargs={"pk": self.object.pk})
+
     # current url that unauthenticated user was trying to access is by default passed to the get url "next" parameter as the user gets redircted to the login url. so the code below is not needed as "LoginRequiredMixin" already does it for us
     # def get_login_url(self):
     #     return f"""{reverse_lazy("login")}?next={reverse_lazy("blog:post_update", kwargs={"pk": self.kwargs["pk"]})}"""
