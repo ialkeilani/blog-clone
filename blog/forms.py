@@ -7,10 +7,11 @@ from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
+    author = forms.ModelChoiceField(queryset=User.objects.all(), required=False)
     class Meta():
         model = Post
-        # fields = ('author', 'title', 'text')
-        fields = ('title', 'text') #author and published_date will be set by the views
+        fields = ('author', 'title', 'text')
+        # fields = ('title', 'text') #author and published_date will be set by the views
 
 
 class CommentForm(forms.ModelForm):

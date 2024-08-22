@@ -6,7 +6,22 @@
 <h1>New Post</h1>
 <form method="POST">
     {% csrf_token %}
-    {{form.as_p}}
+{#  {{form.as_p}}     #}
+    {% for field in form %}
+        {% if field.name == 'author' %}
+            <p>
+                {{ field.label_tag }}
+                <select name="{{ field.name }}" id="{{ field.id_for_label }}" disabled>
+                    <option value="{{ user.pk }}" selected>{{ user.username }}</option>
+                </select>
+            </p>
+        {% else %}
+            <p>
+                {{ field.label_tag }}
+                {{ field }}
+            </p>
+    {% endif %}
+{% endfor %}
     <button type="submit">submit</button>
 </form>
 

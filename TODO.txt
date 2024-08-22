@@ -1,7 +1,6 @@
 TASKS:
 - add support for users signup
-    - add "user" field and make it disabled on forms
-        <input type="text" id="fname" name="fname" value="John" disabled><br>
+
 
 
 - try logging in with an inactive user
@@ -46,6 +45,8 @@ Completed:
     - register should be available if not logged in
     - after registering, user should be automatically logged it
     - try to register same user twice before loging in
+    - add "user" field and make it disabled on forms
+
 
 
 
