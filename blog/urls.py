@@ -21,7 +21,6 @@ urlpatterns = [
     path('comment/<int:pk>/remove/', views.comment_remove, name="comment_remove"),
 
     path('registration/', views.Registration.as_view(), name="registration"),
-    path('registration/<int:reg_done>/', views.Registration.as_view(), name="registration"),
 
     path('about/', views.About.as_view(), name="about"),
 
