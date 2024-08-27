@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar', # 'debug_toolbar' support.  has dependency on 'django.contrib.staticfiles', that's why it should come after it
 ]
 
 INSTALLED_APPS+=[item.name for item in BASE_DIR.iterdir() if item.is_dir() and
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware', # 'debug_toolbar' support
 ]
 
 ROOT_URLCONF = 'blog_clone.urls'
@@ -139,3 +141,5 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 LOGIN_URL = '/login/'
+
+INTERNAL_IPS = ['127.0.0.1'] # 'debug_toolbar' support

@@ -26,3 +26,7 @@ urlpatterns = [
     # path('logout/', LogoutView.as_view(http_method_names=['get'], next_page=settings.LOGOUT_REDIRECT_URL), name='logout'),
     path('logout/', LogoutView.as_view(), name='logout')
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns+=[path('__debug__/', include(debug_toolbar.urls))]
