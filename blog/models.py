@@ -29,7 +29,8 @@ class Post(models.Model):
 
 
     # def get_absolute_url(self):
-    #     return reverse("blog:post_detail", kwargs={"pk": self.pk})
+    #     return reverse(f"{self.app_label}:post_detail", kwargs={"pk": self.pk})
+
 
 
     def __str__(self):
@@ -51,4 +52,4 @@ class Comment(models.Model):
     #     return reverse("blog:post_detail", kwargs={"pk": self.post.pk})
 
     def __str__(self):
-        return self.text
+        return f"{self.pk}/{self.post.pk} -> by {self.author.username} on ({self.created_date})"

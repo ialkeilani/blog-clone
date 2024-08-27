@@ -1,18 +1,8 @@
 TASKS:
-- add support for users signup
-
-
-
-- try logging in with an inactive user
 
 look at http codes:
     https://auth.yncu.com/doLogin?null
     https://auth.yncu.com/InvalidSession
-
-study the "ModelForm.save()" method:
-    class UserForm(forms.ModelForm):
-
-        def save(self, commit=True):
 
 
 
